@@ -1,0 +1,12 @@
+FROM resin/raspberry-pi-python:3.6
+
+ENV INITSYSTEM on
+
+WORKDIR /srv/app
+
+COPY ./requirements.txt /requirements.txt
+RUN pip install -r /requirements.txt
+
+COPY dht22.py ./
+
+CMD ["python", "dht22.py"]
