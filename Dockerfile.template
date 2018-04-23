@@ -1,6 +1,7 @@
 FROM resin/raspberry-pi-python:3.6
 
 ENV INITSYSTEM on
+ENV TZ Australia/Melbourne
 
 WORKDIR /srv/app
 
