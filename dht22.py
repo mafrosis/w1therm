@@ -30,7 +30,7 @@ def main():
         print('{:.1f}, {:.1f}'.format(hum, temp))
 
         payload = {
-            'ts': datetime.datetime.now().isoformat().split('.')[0],
+            'ts': str(datetime.datetime.now().timestamp()).split('.')[0],
             'temperature': temp,
             'humidity': hum,
         }
