@@ -24,17 +24,30 @@ def init():
 def main():
     jorg_addr = init()
 
+    data = []
+
     while True:
         hum, temp = Adafruit_DHT.read_retry(Adafruit_DHT.DHT22, 25)
 
         print('{:.1f}, {:.1f}'.format(hum, temp))
 
-        payload = {
+        # add data point to list
+        data.append({
             'ts': str(datetime.datetime.now().timestamp()).split('.')[0],
             'temperature': temp,
             'humidity': hum,
-        }
-        requests.post('http://{}:8003/api/dht22/'.format(jorg_addr), json=payload)
+        })
+
+        try:
+            requests.post('http://{}:8003/api/dht22/'.format(jorg_addr), json=data)
+
+            # reset the data storage after a successful POST
+            data = []
+
+        except requests.exceptions.RequestException:
+            # payload has been stored for POST next time
+            pass
+
         time.sleep(60)
 
 
