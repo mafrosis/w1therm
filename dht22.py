@@ -39,7 +39,12 @@ def main():
         })
 
         try:
-            requests.post('http://{}:8003/api/dht22/'.format(jorg_addr), json=data)
+            resp = requests.post('http://{}:8003/api/dht22/'.format(jorg_addr), json=data)
+
+            if resp.status_code == 200:
+                print('Sent {} data points'.format(len(data)))
+            else:
+                print('Server unavailable. Caching data point(s)')
 
             # reset the data storage after a successful POST
             data = []
