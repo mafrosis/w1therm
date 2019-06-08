@@ -24,6 +24,7 @@ logger.setLevel(logging.DEBUG)
 # BCM pin numbering
 GPIO_PIN_SSR = 23
 GPIO_PIN_DHT22 = 24
+GPIO_PIN_FAN = 17
 
 TIME_SLEEP = 30
 
@@ -60,9 +61,11 @@ def setup_gpio():
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     GPIO.setup(GPIO_PIN_SSR, GPIO.OUT)
+    GPIO.setup(GPIO_PIN_FAN, GPIO.OUT)
 
     # ensure fridge off at start up
     turn_fridge_off()
+    turn_fan_off()
 
     return True
 
@@ -76,6 +79,18 @@ def turn_fridge_off():
 def turn_fridge_on():
     logger.debug('Fridge switched on (pin high)')
     GPIO.output(GPIO_PIN_SSR, GPIO.HIGH)
+    return True
+
+
+def turn_fan_off():
+    logger.debug('Fan switched off (pin low)')
+    GPIO.output(GPIO_PIN_FAN, GPIO.LOW)
+    return True
+
+
+def turn_fan_on():
+    logger.debug('Fan switched on (pin high)')
+    GPIO.output(GPIO_PIN_FAN, GPIO.HIGH)
     return True
 
 
@@ -151,9 +166,13 @@ def main():
         if fridge_off:
             if turn_fridge_on():
                 fridge_off = False
+
+            turn_fan_off()
         else:
             if turn_fridge_off():
                 fridge_off = True
+
+            turn_fan_on()
 
         # add data point to list
         data.append({
