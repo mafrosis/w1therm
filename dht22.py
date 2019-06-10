@@ -19,7 +19,7 @@ except RuntimeError:
 logger = logging.getLogger(__name__)
 sh = logging.StreamHandler()
 logger.addHandler(sh)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 # BCM pin numbering
 GPIO_PIN_SSR = 23
@@ -144,8 +144,8 @@ def read():
 
         return hum or 0, temp or 0
 
-    logger.debug('Humidity: {}'.format(hum))
-    logger.debug('Temperature: {}'.format(temp))
+    logger.info('Humidity: {}'.format(hum))
+    logger.info('Temperature: {}'.format(temp))
 
     return hum, temp
 
@@ -173,6 +173,8 @@ def main():
                 fridge_off = True
 
             turn_fan_on()
+
+        logger.info('Fridge is {}'.format('on' if not fridge_off else 'off'))
 
         # add data point to list
         data.append({
