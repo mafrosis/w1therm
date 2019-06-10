@@ -26,7 +26,9 @@ GPIO_PIN_SSR = 23
 GPIO_PIN_DHT22 = 24
 GPIO_PIN_FAN = 17
 
-TIME_SLEEP = 30
+TIME_SLEEP = 10
+
+TARGET_TEMP = 12.0
 
 
 def retry_forever(f):
@@ -163,16 +165,16 @@ def main():
     while True:
         hum, temp = read()
 
-        if fridge_off:
+        if temp > TARGET_TEMP:
             if turn_fridge_on():
                 fridge_off = False
 
-            turn_fan_off()
+            #turn_fan_off()
         else:
             if turn_fridge_off():
                 fridge_off = True
 
-            turn_fan_on()
+            #turn_fan_on()
 
         logger.info('Fridge is {}'.format('on' if not fridge_off else 'off'))
 
