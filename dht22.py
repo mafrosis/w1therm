@@ -30,6 +30,8 @@ TIME_SLEEP = 10
 
 TARGET_TEMP = 12.0
 
+HASSIO_AUTH_TOKEN="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIzOTIwODFiMzdhZGY0ZmFhODg1ZjNlNTkyYWQ0MGM3MCIsImlhdCI6MTU2MDI1MzIxNiwiZXhwIjoxODc1NjEzMjE2fQ.HHDEeRRlJXKWhb0l_UYuWzkBA4DoUqpTczt70V_CLIw"
+
 
 def retry_forever(f):
     def wrapped(*args, **kwargs):
@@ -97,34 +99,42 @@ def turn_fan_on():
 
 
 @retry_forever
-def resolve_jorg():
-    logger.debug('Resolve jorg..')
+def resolve_kvothe():
+    logger.debug('Resolve kvothe..')
 
-    # discover jorg ip address via nslookup
+    # discover kvothe ip address via nslookup
     res = dns.resolver.Resolver()
     res.nameservers = ['192.168.1.1']
 
-    #try:
-    return [n for n in res.query('jorg.eggs')][0].address
-    #except Exception as e:
-    #    logger.error(e)
+    try:
+        return [n for n in res.query('kvothe.eggs')][0].address
+    except Exception as e:
+        logger.warning(e)
 
 
-def send(jorg_addr, data):
+def send(kvothe_addr, name, state, attrs=None):
     """
     Post sensor data to server
     """
-    try:
-        resp = requests.post('http://{}:8003/api/dht22/'.format(jorg_addr), json=data)
+    data = {'state': state}
 
-        if resp.status_code == 200:
-            logger.info('Sent {} data points'.format(len(data)))
+    if attrs:
+        data['attributes'] = attrs
+
+    try:
+        resp = requests.post(
+            'http://{}:8123/api/states/fridge.{}'.format(kvothe_addr, name),
+            json=data,
+            headers={'Authorization': 'Bearer {}'.format(HASSIO_AUTH_TOKEN)},
+        )
+
+        if resp.status_code in (200, 201):
+            logger.debug('{} returned logging to hass.io: {}'.format(resp.status_code, data))
 
             # reset the data storage after a successful POST
             data = []
         else:
-            logger.info('Server unavailable. Caching data point(s)')
-
+            logger.error(resp.text)
 
     except requests.exceptions.RequestException:
         # payload has been stored for POST next time
@@ -156,9 +166,9 @@ def main():
     if not setup_gpio():
         logger.critical('Failed setting up GPIO')
 
-    jorg_addr = resolve_jorg()
-
-    data = []
+    # discover hass.io via DNS
+    hassio_addr = resolve_kvothe()
+    logger.info('Hass.io found at {}'.format(hassio_addr))
 
     fridge_off = True
 
@@ -176,16 +186,16 @@ def main():
 
             #turn_fan_on()
 
-        logger.info('Fridge is {}'.format('on' if not fridge_off else 'off'))
+        fridge_power_state = 'on' if not fridge_off else 'off'
+        logger.info('Fridge is {}'.format(fridge_power_state))
 
-        # add data point to list
-        data.append({
-            'ts': str(datetime.datetime.now().timestamp()).split('.')[0],
-            'temperature': temp,
-            'humidity': hum,
-        })
+        # log historic data
+        if hassio_addr:
+            send(hassio_addr, 'temperature', '{:.1f}'.format(temp))
+            send(hassio_addr, 'humidity', '{:.1f}'.format(hum))
+            send(hassio_addr, 'fridge_power', fridge_power_state)
+            send(hassio_addr, 'fan_power', fan_power_state)
 
-        #send(jorg_addr, data)
         time.sleep(TIME_SLEEP)
         logger.debug('TS: {}'.format(datetime.datetime.now()))
 
