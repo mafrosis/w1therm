@@ -171,6 +171,7 @@ def main():
     logger.info('Hass.io found at {}'.format(hassio_addr))
 
     fridge_off = True
+    fan_off = True
 
     while True:
         hum, temp = read()
@@ -178,16 +179,23 @@ def main():
         if temp > TARGET_TEMP:
             if turn_fridge_on():
                 fridge_off = False
-
-            #turn_fan_off()
         else:
             if turn_fridge_off():
                 fridge_off = True
 
-            #turn_fan_on()
-
         fridge_power_state = 'on' if not fridge_off else 'off'
         logger.info('Fridge is {}'.format(fridge_power_state))
+
+        # run the fan every other minute
+        if datetime.datetime.now().minute % 2 == 0:
+            if turn_fan_on():
+                fan_off = False
+        else:
+            if turn_fan_off():
+                fan_off = True
+
+        fan_power_state = 'on' if not fan_off else 'off'
+        logger.info('Fan is {}'.format(fan_power_state))
 
         # log historic data
         if hassio_addr:
