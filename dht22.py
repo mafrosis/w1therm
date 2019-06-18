@@ -112,7 +112,7 @@ def resolve_kvothe():
         logger.warning(e)
 
 
-def send(kvothe_addr, name, state, attrs=None):
+def send(kvothe_addr, name, state, binary=False, attrs=None):
     """
     Post sensor data to server
     """
@@ -123,7 +123,9 @@ def send(kvothe_addr, name, state, attrs=None):
 
     try:
         resp = requests.post(
-            'http://{}:8123/api/states/fridge.{}'.format(kvothe_addr, name),
+            'http://{}:8123/api/states/{}sensor.fridge_{}'.format(
+                kvothe_addr, 'binary_' if binary is True else '', name
+            ),
             json=data,
             headers={'Authorization': 'Bearer {}'.format(HASSIO_AUTH_TOKEN)},
         )
@@ -201,8 +203,8 @@ def main():
         if hassio_addr:
             send(hassio_addr, 'temperature', '{:.1f}'.format(temp))
             send(hassio_addr, 'humidity', '{:.1f}'.format(hum))
-            send(hassio_addr, 'fridge_power', fridge_power_state)
-            send(hassio_addr, 'fan_power', fan_power_state)
+            send(hassio_addr, 'power', fridge_power_state, binary=True)
+            send(hassio_addr, 'fan_power', fan_power_state, binary=True)
 
         time.sleep(TIME_SLEEP)
         logger.debug('TS: {}'.format(datetime.datetime.now()))
