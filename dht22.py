@@ -12,7 +12,7 @@ try:
     import RPi.GPIO as GPIO
 except RuntimeError:
     # dummy GPIO for unit testing (this is mocked)
-    import time as GPIO
+    import time as GPIO  # pylint: disable=reimported
 
 
 # setup logging
@@ -107,7 +107,7 @@ def resolve_homeassistant():
     res.nameservers = ['192.168.1.1']
 
     try:
-        return [n for n in res.query('ringil.eggs')][0].address
+        return res.query('ringil.eggs')[0].address
     except Exception as e:
         logger.warning(e)
 
@@ -131,7 +131,7 @@ def send(homeassistant_addr, name, state, binary=False, attrs=None):
         )
 
         if resp.status_code in (200, 201):
-            logger.debug('{} returned logging to hass.io: {}'.format(resp.status_code, data))
+            logger.debug('%s returned logging to hass.io: %s', resp.status_code, data)
 
             # reset the data storage after a successful POST
             data = []
@@ -158,8 +158,8 @@ def read():
 
         return hum or 0, temp or 0
 
-    logger.info('Humidity: {}'.format(hum))
-    logger.info('Temperature: {}'.format(temp))
+    logger.info('Humidity: %s', hum)
+    logger.info('Temperature: %s', temp)
 
     return hum, temp
 
@@ -170,8 +170,8 @@ def main():
 
     # discover hass.io via DNS
     hassio_addr = resolve_homeassistant()
-    logger.info('Hass.io found at {}'.format(hassio_addr))
-    logger.info('Target temperature is {}'.format(TARGET_TEMP))
+    logger.info('Hass.io found at %s', hassio_addr)
+    logger.info('Target temperature is %s', TARGET_TEMP)
 
     fridge_off = True
     fan_off = True
@@ -180,7 +180,7 @@ def main():
         hum, temp = read()
 
         if datetime.datetime.now().minute % 10 == 0:
-            logger.info('Target temperature is {}'.format(TARGET_TEMP))
+            logger.info('Target temperature is %s', TARGET_TEMP)
 
         if temp > TARGET_TEMP:
             if turn_fridge_on():
@@ -190,7 +190,7 @@ def main():
                 fridge_off = True
 
         fridge_power_state = 'on' if not fridge_off else 'off'
-        logger.info('Fridge is {}'.format(fridge_power_state))
+        logger.info('Fridge is %s', fridge_power_state)
 
         # run the fan every other minute
         if datetime.datetime.now().minute % 2 == 0:
@@ -201,7 +201,7 @@ def main():
                 fan_off = True
 
         fan_power_state = 'on' if not fan_off else 'off'
-        logger.info('Fan is {}'.format(fan_power_state))
+        logger.info('Fan is %s', fan_power_state)
 
         # log historic data
         if hassio_addr:
@@ -211,7 +211,7 @@ def main():
             send(hassio_addr, 'fan_power', fan_power_state, binary=True)
 
         time.sleep(TIME_SLEEP)
-        logger.debug('TS: {}'.format(datetime.datetime.now()))
+        logger.debug('TS: %s', datetime.datetime.now())
 
 
 if __name__ == '__main__':
