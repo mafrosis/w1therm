@@ -99,20 +99,20 @@ def turn_fan_on():
 
 
 @retry_forever
-def resolve_kvothe():
-    logger.debug('Resolve kvothe..')
+def resolve_homeassistant():
+    logger.debug('Resolve homeassistant on ringil..')
 
-    # discover kvothe ip address via nslookup
+    # discover ringil ip address via nslookup
     res = dns.resolver.Resolver()
     res.nameservers = ['192.168.1.1']
 
     try:
-        return [n for n in res.query('kvothe.eggs')][0].address
+        return [n for n in res.query('ringil.eggs')][0].address
     except Exception as e:
         logger.warning(e)
 
 
-def send(kvothe_addr, name, state, binary=False, attrs=None):
+def send(homeassistant_addr, name, state, binary=False, attrs=None):
     """
     Post sensor data to server
     """
@@ -124,7 +124,7 @@ def send(kvothe_addr, name, state, binary=False, attrs=None):
     try:
         resp = requests.post(
             'http://{}:8123/api/states/{}sensor.fridge_{}'.format(
-                kvothe_addr, 'binary_' if binary is True else '', name
+                homeassistant_addr, 'binary_' if binary is True else '', name
             ),
             json=data,
             headers={'Authorization': 'Bearer {}'.format(HASSIO_AUTH_TOKEN)},
@@ -169,7 +169,7 @@ def main():
         logger.critical('Failed setting up GPIO')
 
     # discover hass.io via DNS
-    hassio_addr = resolve_kvothe()
+    hassio_addr = resolve_homeassistant()
     logger.info('Hass.io found at {}'.format(hassio_addr))
     logger.info('Target temperature is {}'.format(TARGET_TEMP))
 
