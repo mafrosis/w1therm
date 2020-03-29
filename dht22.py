@@ -171,12 +171,16 @@ def main():
     # discover hass.io via DNS
     hassio_addr = resolve_kvothe()
     logger.info('Hass.io found at {}'.format(hassio_addr))
+    logger.info('Target temperature is {}'.format(TARGET_TEMP))
 
     fridge_off = True
     fan_off = True
 
     while True:
         hum, temp = read()
+
+        if datetime.datetime.now().minute % 10 == 0:
+            logger.info('Target temperature is {}'.format(TARGET_TEMP))
 
         if temp > TARGET_TEMP:
             if turn_fridge_on():
