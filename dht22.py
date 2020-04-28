@@ -29,6 +29,7 @@ GPIO_PIN_FAN = 17
 TIME_SLEEP = 10
 
 TARGET_TEMP = 7.0
+MAX_DELTA = 1.0
 
 HASSIO_AUTH_TOKEN="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIzOTIwODFiMzdhZGY0ZmFhODg1ZjNlNTkyYWQ0MGM3MCIsImlhdCI6MTU2MDI1MzIxNiwiZXhwIjoxODc1NjEzMjE2fQ.HHDEeRRlJXKWhb0l_UYuWzkBA4DoUqpTczt70V_CLIw"
 
@@ -182,10 +183,10 @@ def main():
         if datetime.datetime.now().minute % 10 == 0:
             logger.info('Target temperature is %s', TARGET_TEMP)
 
-        if temp > TARGET_TEMP:
+        if temp >= TARGET_TEMP + MAX_DELTA:
             if turn_fridge_on():
                 fridge_off = False
-        else:
+        elif temp <= TARGET_TEMP - MAX_DELTA:
             if turn_fridge_off():
                 fridge_off = True
 
