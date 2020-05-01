@@ -1,4 +1,4 @@
+./Adafruit_Python_DHT
 dnspython
-git+https://github.com/mafrosis/Adafruit_Python_DHT.git@rpi1
 requests
 RPi.GPIO

@@ -5,6 +5,7 @@ ENV TZ Australia/Melbourne
 
 WORKDIR /srv/app
 
+ADD ./Adafruit_Python_DHT Adafruit_Python_DHT
 COPY ./requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
 
