@@ -2,6 +2,7 @@
 
 import datetime
 import logging
+import os
 import time
 
 import Adafruit_DHT
@@ -28,7 +29,6 @@ GPIO_PIN_FAN = 17
 
 TIME_SLEEP = 10
 
-TARGET_TEMP = 7.0
 MAX_DELTA = 1.0
 
 HASSIO_AUTH_TOKEN="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIzOTIwODFiMzdhZGY0ZmFhODg1ZjNlNTkyYWQ0MGM3MCIsImlhdCI6MTU2MDI1MzIxNiwiZXhwIjoxODc1NjEzMjE2fQ.HHDEeRRlJXKWhb0l_UYuWzkBA4DoUqpTczt70V_CLIw"
@@ -172,7 +172,16 @@ def main():
     # discover hass.io via DNS
     hassio_addr = resolve_homeassistant()
     logger.info('Hass.io found at %s', hassio_addr)
-    logger.info('Target temperature is %s', TARGET_TEMP)
+
+    # set default target temp if not supplied via ENV
+    try:
+        TARGET_TEMP = float(os.getenv('TARGET_TEMP'))
+        logger.info('Target temperature is %s from ENV', TARGET_TEMP)
+
+    except (ValueError, TypeError):
+        logger.error('Bad TARGET_TEMP env variable; must be a float')
+        logger.info('Default target temp of 7.0C applied')
+        TARGET_TEMP = 7.0
 
     fridge_off = True
     fan_off = True
