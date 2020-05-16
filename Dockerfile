@@ -3,7 +3,7 @@ FROM balenalib/raspberry-pi2-python:3.7.4
 ENV INITSYSTEM on
 ENV TZ Australia/Melbourne
 
-RUN apt-get update && apt-get install -y git build-essential
+RUN apt-get update && apt-get install -y build-essential
 
 WORKDIR /srv/app
 
