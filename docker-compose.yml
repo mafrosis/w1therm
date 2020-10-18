@@ -10,4 +10,4 @@ services:
     environment:
       TARGET_TEMP: 13
     volumes:
-      - ./dht22.py:/srv/app/dht22.py
+      - ./fridge.py:/srv/app/fridge.py

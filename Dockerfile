@@ -11,6 +11,6 @@ ADD ./Adafruit_Python_DHT Adafruit_Python_DHT
 COPY ./requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
 
-COPY dht22.py ./
+COPY fridge.py ./
 
-CMD ["python", "dht22.py"]
+CMD ["python", "fridge.py"]
