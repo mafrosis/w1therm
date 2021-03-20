@@ -10,3 +10,5 @@ services:
       context: .
     environment:
       - DEBUG=1
+      - MQTT_HOST
+      - MQTT_TOPIC_ROOM

@@ -24,12 +24,19 @@ if os.environ.get('DEBUG'):
 GPIO_PIN_DHT22 = 18
 
 TIME_SLEEP = 60
-MQTT_HOST = 'ringil'
-MQTT_TOPIC_ROOM = 'servercloset'
 
 
 def main():
-    logger.info('dht22_2')
+    MQTT_HOST = os.environ.get('MQTT_HOST')
+    MQTT_TOPIC_ROOM = os.environ.get('MQTT_TOPIC_ROOM')
+
+    if not MQTT_HOST:
+        logger.info('You must set MQTT_HOST environment var')
+        sys.exit(1)
+    if not MQTT_TOPIC_ROOM:
+        logger.info('You must set MQTT_TOPIC_ROOM environment var')
+        sys.exit(1)
+
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
 
