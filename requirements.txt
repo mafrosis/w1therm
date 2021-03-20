@@ -1,4 +1,4 @@
 ./Adafruit_Python_DHT
-dnspython
-requests
+paho-mqtt
 RPi.GPIO
+#sysv_ipc

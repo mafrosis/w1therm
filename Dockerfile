@@ -1,9 +1,10 @@
-FROM balenalib/raspberry-pi2-python:3.7.4
+FROM balenalib/raspberrypi3-python:3.8
 
 ENV INITSYSTEM on
 ENV TZ Australia/Melbourne
 
 RUN apt-get update && apt-get install -y build-essential
+RUN pip install --upgrade wheel setuptools
 
 WORKDIR /srv/app
 
@@ -11,6 +12,6 @@ ADD ./Adafruit_Python_DHT Adafruit_Python_DHT
 COPY ./requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
 
-COPY fridge.py ./
+COPY dht22.py ./
 
-CMD ["python", "fridge.py"]
+CMD ["python3", "dht22.py"]

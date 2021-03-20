@@ -1,13 +1,12 @@
+---
 version: '3'
 
 services:
-  fridge:
-    image: mafrosis/fridge
+  dht22:
+    image: mafrosis/dht22
     restart: always
     privileged: true
     build:
       context: .
     environment:
-      TARGET_TEMP: 13
-    volumes:
-      - ./fridge.py:/srv/app/fridge.py
+      - DEBUG=1
