@@ -1,4 +1,5 @@
-FROM balenalib/raspberrypi3-python:3.8
+ARG BASE_IMAGE=balenalib/raspberrypi3-python
+FROM ${BASE_IMAGE}:3.8
 
 ENV INITSYSTEM on
 ENV TZ Australia/Melbourne
