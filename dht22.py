@@ -85,10 +85,10 @@ def main():
 def autoconfigure_ha_sensors(mqtt_host, mqtt_topic):
     '''Send discovery messages to auto configure the sensors in HA'''
 
-    # Set a device name for these sensors in HA
+    # Required in Home Assistant to group the sensors against a device
     HA_DEVICE = os.environ.get('HA_DEVICE')
 
-    # Set a friendly name that the sensor will display in HA UI
+    # The friendly name shown in the Home Assistant UI
     HA_SENSOR_NAME = os.environ.get('HA_SENSOR_NAME')
 
     if not HA_DEVICE:
