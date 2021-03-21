@@ -10,5 +10,7 @@ services:
       context: .
     environment:
       - DEBUG=1
+      - HA_DEVICE
+      - HA_SENSOR_NAME
       - MQTT_HOST
       - MQTT_TOPIC_ROOM

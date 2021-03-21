@@ -1,8 +1,10 @@
 #! /usr/bin/env python3
 
 import datetime
+import json
 import logging
 import os
+import sys
 import time
 
 import Adafruit_DHT
@@ -29,13 +31,21 @@ TIME_SLEEP = 60
 def main():
     MQTT_HOST = os.environ.get('MQTT_HOST')
     MQTT_TOPIC_ROOM = os.environ.get('MQTT_TOPIC_ROOM')
+    HA_SENSOR_NAME = os.environ.get('HA_SENSOR_NAME')
 
     if not MQTT_HOST:
         logger.info('You must set MQTT_HOST environment var')
         sys.exit(1)
     if not MQTT_TOPIC_ROOM:
-        logger.info('You must set MQTT_TOPIC_ROOM environment var')
-        sys.exit(1)
+        if HA_SENSOR_NAME:
+            MQTT_TOPIC_ROOM = HA_SENSOR_NAME.replace(' ', '_').lower()
+            logger.info('MQTT_TOPIC_ROOM has been set to "%s" based on HA_SENSOR_NAME', HA_SENSOR_NAME)
+        else:
+            logger.info('You must set MQTT_TOPIC_ROOM environment var')
+            sys.exit(1)
+
+    if os.environ.get('HA_SENSOR_NAME'):
+        autoconfigure_ha_sensors(MQTT_HOST, MQTT_TOPIC_ROOM)
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
@@ -65,6 +75,44 @@ def main():
             time.sleep(TIME_SLEEP-1)
     finally:
         logger.info('fin')
+
+
+def autoconfigure_ha_sensors(mqtt_host, mqtt_topic):
+    '''Send discovery messages to auto configure the sensors in HA'''
+
+    # Set a device name for these sensors in HA
+    HA_DEVICE = os.environ.get('HA_DEVICE')
+
+    # Set a friendly name that the sensor will display in HA UI
+    HA_SENSOR_NAME = os.environ.get('HA_SENSOR_NAME')
+
+    if not HA_DEVICE:
+        logger.info('You must set HA_DEVICE environment var')
+        sys.exit(1)
+    if not HA_SENSOR_NAME:
+        logger.info('You must set HA_SENSOR_NAME environment var')
+        sys.exit(1)
+
+    # Configure both temperature and humidity
+    for sensor, unit in (('temperature', '°C'), ('humidity', '%')):
+        publish.single(
+            f'homeassistant/sensor/{HA_DEVICE}_dht22/{sensor}/config',
+            json.dumps({
+                'name': '{} {}'.format(HA_SENSOR_NAME, sensor.title()),
+                'unique_id': f'{mqtt_topic}_{sensor}',
+                'device_class': sensor,
+                'state_topic': f'home/{mqtt_topic}/{sensor}',
+                'unit_of_measurement': unit,
+                'device': {
+                    'identifiers': [HA_DEVICE, 'raspberrypi'],
+                    'name': f'{HA_DEVICE} DHT22',
+                    'model': 'DHT22',
+                }
+            }),
+            hostname=mqtt_host,
+        )
+
+    logger.info('Autodiscovery topic published for "%s_%s" on device "%s DHT22"', mqtt_topic, sensor, HA_DEVICE)
 
 
 if __name__ == '__main__':
