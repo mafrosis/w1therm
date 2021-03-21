@@ -4,7 +4,7 @@ version: '3'
 services:
   dht22:
     image: mafrosis/dht22
-    restart: always
+    restart: unless-stopped
     privileged: true
     build:
       context: .
