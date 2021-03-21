@@ -10,6 +10,7 @@ services:
       context: .
     environment:
       - DEBUG=1
+      - GPIO_PIN_DHT22
       - HA_DEVICE
       - HA_SENSOR_NAME
       - MQTT_HOST

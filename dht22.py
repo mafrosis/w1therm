@@ -23,7 +23,12 @@ if os.environ.get('DEBUG'):
 
 
 # BCM pin numbering  https://pinout.xyz
-GPIO_PIN_DHT22 = 18
+GPIO_PIN_DHT22 = os.environ.get('GPIO_PIN_DHT22')
+if not GPIO_PIN_DHT22:
+    GPIO_PIN_DHT22 = 18
+    logger.info('GPIO_PIN_DHT22 has been defaulted to 18')
+else:
+    logger.info('GPIO_PIN_DHT22 has been set to %s', GPIO_PIN_DHT22)
 
 TIME_SLEEP = 60
 
