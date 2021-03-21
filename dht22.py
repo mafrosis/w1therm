@@ -115,6 +115,7 @@ def autoconfigure_ha_sensors(mqtt_host, mqtt_topic):
                 }
             }),
             hostname=mqtt_host,
+            retain=True,
         )
 
     logger.info('Autodiscovery topic published for "%s_%s" on device "%s DHT22"', mqtt_topic, sensor, HA_DEVICE)
