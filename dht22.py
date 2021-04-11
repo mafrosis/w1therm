@@ -75,7 +75,7 @@ def main():
                 (f'home/{MQTT_TOPIC_ROOM}/temperature', temp),
                 (f'home/{MQTT_TOPIC_ROOM}/humidity', humidity),
             ]
-            ret = publish.multiple(msgs, hostname=MQTT_HOST)
+            publish.multiple(msgs, hostname=MQTT_HOST)
 
             time.sleep(TIME_SLEEP-1)
     finally:
