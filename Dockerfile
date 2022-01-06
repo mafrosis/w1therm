@@ -3,9 +3,9 @@ FROM ${BASE_IMAGE}:3.8
 
 ENV INITSYSTEM on
 ENV TZ Australia/Melbourne
+ENV CFLAGS -fcommon
 
 RUN apt-get update && apt-get install -y build-essential
-RUN pip install --upgrade wheel setuptools
 
 WORKDIR /srv/app
 
