@@ -1,12 +1,12 @@
-DHT22 for Rpi and Home Assistant
-================================
+W1therm for Rpi and Home Assistant
+==========
 
-A simple python app running in docker for reading a DHT22 and sending via MQTT. Autodiscovery for
-Home Assistant is baked in.
+A simple python app running in docker for reading w1 type sensors (such as DS1822, DS18S20 & DS18B20),
+and publish via MQTT. Autodiscovery for Home Assistant is baked in.
 
 
 Building
---------
+----------
 
 The default base image is `balenalib/raspberrypi3-python`, which is suitable for raspberrypi3/4:
 
@@ -19,7 +19,7 @@ for example a raspberrypi zero:
 
 
 Running
--------
+----------
 
 You are required to specify at least two environment variables. Export these in your shell before
 running the `docker-compose up` command.
