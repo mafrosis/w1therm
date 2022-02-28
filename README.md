@@ -48,6 +48,15 @@ And to start the app:
     docker-compose up
 
 
+Debug
+----------
+
+Setting the `DEBUG` environment var will cause sensor readings to be published to the docker logs.
+
+Additionally `ipdb` is installed if you want to debug the python code.
+
+
+
 MQTT Topic
 ----------
 
